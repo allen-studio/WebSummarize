@@ -109,33 +109,47 @@ function getPageContent() {
 
 // Summarize content using ChatGPT
 async function summarizeContent(content, settings) {
-  const response = await fetch(`${settings.baseUrl}/v1/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${settings.apiKey}`
-    },
-    body: JSON.stringify({
-      model: settings.modelName,
-      messages: [
-        {
-          role: 'system',
-          content: settings.systemPrompt || '你是一个网页内容总结助手，请简明扼要地总结网页的主要内容。'
-        },
-        {
-          role: 'user',
-          content: content
-        }
-      ]
-    })
-  });
+  try {
+    const response = await fetch(`${settings.baseUrl}/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${settings.apiKey}`
+      },
+      body: JSON.stringify({
+        model: settings.modelName,
+        messages: [
+          {
+            role: 'system',
+            content: settings.systemPrompt || '你是一个网页内容总结助手，请简明扼要地总结网页的主要内容。'
+          },
+          {
+            role: 'user',
+            content: content
+          }
+        ],
+        max_tokens: 500,  // 限制响应长度
+        temperature: 0.7  // 控制创造性
+      })
+    });
 
-  if (!response.ok) {
-    throw new Error('API 请求失败');
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (response.status === 429) {
+        throw new Error('API 调用次数已达到限制，请稍后再试（约一小时后）');
+      } else {
+        throw new Error(errorData.error?.message || 'API 请求失败');
+      }
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } catch (error) {
+    if (error.message.includes('rate limit')) {
+      throw new Error('API 调用次数已达到限制，请稍后再试（约一小时后）');
+    }
+    throw error;
   }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
 }
 
 // Save to Notion
