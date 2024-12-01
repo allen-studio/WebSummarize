@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="summary">网页总结</button>
+      <button class="tab-btn" data-tab="settings">设置</button>
+    </div>
+
+    <div class="tab-content active" id="summary">
+      <div class="buttons">
+        <button id="summarize">总结</button>
+        <button id="save-notion">存储到Notion</button>
+      </div>
+      <textarea id="summary-content" readonly></textarea>
+    </div>
+
+    <div class="tab-content" id="settings">
+      <div class="settings-section">
+        <h3>大模型设置</h3>
+        <div class="input-group">
+          <label>Base URL:</label>
+          <input type="text" id="base-url">
+        </div>
+        <div class="input-group">
+          <label>Model Name:</label>
+          <input type="text" id="model-name">
+        </div>
+        <div class="input-group">
+          <label>API Key:</label>
+          <input type="password" id="api-key">
+        </div>
+        <div class="input-group">
+          <label>System Prompt:</label>
+          <textarea id="system-prompt"></textarea>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Notion设置</h3>
+        <div class="input-group">
+          <label>API Token:</label>
+          <input type="password" id="notion-token">
+        </div>
+        <div class="input-group">
+          <label>Database ID:</label>
+          <input type="text" id="database-id">
+        </div>
+      </div>
+
+      <button id="save-settings">保存设置</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
